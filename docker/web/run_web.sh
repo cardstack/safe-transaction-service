@@ -1,8 +1,13 @@
 #!/bin/bash
-
 set -euo pipefail
 
-echo "==> $(date +%H:%M:%S) ==> Migrating Django models... "
+if [ -n "${POSTGRES_PASSWORD:-}" ]; then
+  export DATABASE_URL="psql://postgres:${POSTGRES_PASSWORD}@db:5432/postgres"
+fi
+
+sleep 30
+
+echo "==>/ $(date +%H:%M:%S) ==> Migrating Django models... "
 python manage.py migrate --noinput
 
 echo "==> $(date +%H:%M:%S) ==> Setting up service... "

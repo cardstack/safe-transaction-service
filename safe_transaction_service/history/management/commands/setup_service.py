@@ -128,6 +128,25 @@ PROXY_FACTORIES: Dict[EthereumNetwork, List[Tuple[str, int]]] = {
 class Command(BaseCommand):
     help = 'Setup Transaction Service Required Tasks'
 
+    def setup_sokol(self):
+        SafeMasterCopy.objects.get_or_create(address='0x6851D6fDFAfD08c0295C392436245E5bc78B0185',
+                                             defaults={
+                                                 'initial_block_number': 20030732,
+                                                 'tx_block_number': 20030732,
+                                                 'version': '1.2.0'
+                                             })
+        SafeMasterCopy.objects.get_or_create(address='0x34CfAC646f301356fAa8B21e94227e3583Fe3F5F',
+                                             defaults={
+                                                 'initial_block_number': 20030721,
+                                                 'tx_block_number': 20030721,
+                                                 'version': '1.1.1'
+                                             })
+        ProxyFactory.objects.get_or_create(address='0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F9B',
+                                           defaults={
+                                               'initial_block_number': 20030722,
+                                               'tx_block_number': 20030722,
+                                           })
+
     def handle(self, *args, **options):
         for task in TASKS:
             _, created = task.create_task()
@@ -136,18 +155,8 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(self.style.SUCCESS('Task %s was already created' % task.name))
 
-        self.stdout.write(self.style.SUCCESS('Setting up Safe Contract Addresses'))
-        ethereum_client = EthereumClientProvider()
-        ethereum_network = ethereum_client.get_network()
-        if ethereum_network in MASTER_COPIES:
-            self.stdout.write(self.style.SUCCESS(f'Setting up {ethereum_network.name} safe addresses'))
-            self._setup_safe_master_copies(MASTER_COPIES[ethereum_network])
-        if ethereum_network in PROXY_FACTORIES:
-            self.stdout.write(self.style.SUCCESS(f'Setting up {ethereum_network.name} proxy factory addresses'))
-            self._setup_safe_proxy_factories(PROXY_FACTORIES[ethereum_network])
-
-        if not (ethereum_network in MASTER_COPIES and ethereum_network in PROXY_FACTORIES):
-            self.stdout.write(self.style.WARNING('Cannot detect a valid ethereum-network'))
+        self.stdout.write(self.style.SUCCESS('Setting up Safe Contract Addresses on Sokol'))
+        self.setup_sokol()
 
     def _setup_safe_master_copies(self, safe_master_copies: Sequence[Tuple[str, int, str]]):
         for address, initial_block_number, version in safe_master_copies:

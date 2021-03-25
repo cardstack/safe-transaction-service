@@ -1,6 +1,9 @@
 #!/bin/bash
+if [ -n "${POSTGRES_PASSWORD:-}" ]; then
+  export DATABASE_URL="psql://postgres:${POSTGRES_PASSWORD}@db:5432/postgres"
+fi
 
-set -euo pipefail
+sleep 30
 
 # DEBUG set in .env
 if [ ${DEBUG:-0} = 1 ]; then

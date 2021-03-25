@@ -1,6 +1,11 @@
 #!/bin/bash
-
 set -euo pipefail
+
+if [ -n "${POSTGRES_PASSWORD:-}" ]; then
+  export DATABASE_URL="psql://postgres:${POSTGRES_PASSWORD}@db:5432/postgres"
+fi
+
+sleep 30
 
 # DEBUG set in .env_docker_compose
 if [ ${DEBUG:-0} = 1 ]; then
