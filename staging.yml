@@ -39,7 +39,7 @@ services:
       context: .
       dockerfile: docker/web/Dockerfile
     env_file:
-      - .env_staging
+      - .env_staging # this lives in terraform
     depends_on:
       - db
       - redis
@@ -59,7 +59,7 @@ services:
       context: .
       dockerfile: docker/web/Dockerfile
     env_file:
-      - .env_staging
+      - .env_staging # this lives in terraform
     depends_on:
       - db
       - redis
