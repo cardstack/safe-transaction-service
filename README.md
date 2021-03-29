@@ -117,6 +117,40 @@ python manage.py createsuperuser
 
 Then go to the web browser and navigate to http://localhost:8000/admin/
 
+## Cardstack Deployment
+Cardstack hosts this fork of the transaction service to provide capability to the Sokol network (checkout the 'sokol' branch). This is hosted at: https://transactions-staging.stack.cards. In production we leverage the xDai transaction service hosted at: # services at https://safe-transaction.xdai.gnosis.io
+
+## API
+Below are some examples of how to use this API for gnosis safes.
+
+### Getting Safes by Owner (aka Fetching Prepaid Cards)
+To get all the safes for a particular owner's wallet address (or in other words, to get all the prepaid cards held by a particular individual), use the `/safes` API:
+
+```js
+let { safes } = await (await fetch(`https://safe-transaction.xdai.gnosis.io/owners/${myWalletAddress}`)).json();
+// 'safes' is an array of ethereum addresses that are gnosis safe addresses, aka prepaid card ID's.
+```
+
+To confirm the safe is a prepaid card safe you can query the PrepaidCardManager contract to see if it knows about this safe:
+```js
+let web3 = new Web3(provider);
+let prepaidCardManagerContract = web3.eth.Contract(/*contractABI, prepaidCardContractAddress*/);
+let cardDetail = await prepaidCardManagerContract.methods.cardDetails(safeAddress).call();
+// if the response is falsy then the safe address is not a prepaid card address.
+// otherwise the response is an object that has 2 properties:
+// {
+//   issuer: '0x123...', the address of the entity that created the prepaid card
+//   issuerToken: '0x456..' the address of the L2 token used to create the prepaid card
+// }
+```
+
+The L2 token will be held by the gnosis safe, such that, if you want to see the token balance for the safe, you can query the token contract using the safe address (aka prepaid card ID).
+```js
+let l2TokenContract = web3.eth.Contract(/*contractABI, l2TokenContractAddress*/);
+let decimals18Balance = await l2TokenContract.methods.balanceOf(safeAddress).call();
+let humanFriendlyBalance = web3.utils.fromWei(decimals18Balance); // this is a convenient util for decimals=18 tokens
+```
+
 ## Contributors
 - Denís Graña (denis@gnosis.pm)
 - Giacomo Licari (giacomo.licari@gnosis.pm)
