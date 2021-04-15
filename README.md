@@ -130,7 +130,7 @@ To get all the safes for a particular owner's wallet address (or in other words,
 let { safes } = await (await fetch(`https://safe-transaction.xdai.gnosis.io/owners/${myWalletAddress}/`)).json();
 // 'safes' is an array of ethereum addresses that are gnosis safe addresses, aka prepaid card ID's.
 ```
-Note that for the URL, it needs to have a tailing `/`, and you need to use case-sensitive addresses. The transaction service won't recognize addresses in all lower-case.
+Note that for the URL, it needs to have a tailing `/` and you need to use case-sensitive addresses. The transaction service won't recognize addresses in all lower-case.
 
 To confirm the safe is a prepaid card safe you can query the PrepaidCardManager contract to see if it knows about this safe:
 ```js
